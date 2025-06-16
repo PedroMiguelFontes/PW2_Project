@@ -82,6 +82,6 @@ exports.deleteReservation = (req, res) => {
         if (results.affectedRows === 0) {
             return res.status(404).json({ error: 'Reservation not found' });
         }
-        res.json({ message: 'Reservation deleted successfully' });
+        res.status(204).json({ message: 'Reservation deleted successfully' });
     });
 };  

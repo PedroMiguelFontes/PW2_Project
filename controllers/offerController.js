@@ -45,7 +45,7 @@ exports.updateOffer = (req, res) => {
             if (results.affectedRows === 0) {
                 return res.status(404).json({ error: 'Offer not found' });
             }
-            res.json({ message: 'Offer updated successfully' });
+            res.status(200).json({ message: 'Offer updated successfully' });
         }
     );
 };
@@ -69,7 +69,7 @@ exports.partialUpdateOffer = (req, res) => {
             if (results.affectedRows === 0) {
                 return res.status(404).json({ error: 'Offer not found' });
             }
-            res.json({ message: 'Offer updated successfully' });
+            res.status(200).json({ message: 'Offer updated successfully' });
         }
     );
 };
@@ -85,6 +85,6 @@ exports.deleteOffer = (req, res) => {
         if (results.affectedRows === 0) {
             return res.status(404).json({ error: 'Offer not found' });
         }
-        res.json({ message: 'Offer deleted successfully' });
+        res.status(204).json({ message: 'Offer deleted successfully' });
     });
 };

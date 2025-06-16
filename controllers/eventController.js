@@ -44,7 +44,7 @@ exports.updateEvent = (req, res) => {
             if (results.affectedRows === 0) {
                 return res.status(404).json({ error: 'Event not found' });
             }
-            res.json({ message: 'Event updated successfully' });
+            res.status(200).json({ message: 'Event updated successfully' });
         }
     );
 };
@@ -67,7 +67,7 @@ exports.partialUpdateEvent = (req, res) => {
             if (results.affectedRows === 0) {
                 return res.status(404).json({ error: 'Event not found' });
             }
-            res.json({ message: 'Event updated successfully' });
+            res.status(200).json({ message: 'Event updated successfully' });
         }
     );
 };
@@ -83,6 +83,6 @@ exports.deleteEvent = (req, res) => {
         if (results.affectedRows === 0) {
             return res.status(404).json({ error: 'Event not found' });
         }
-        res.json({ message: 'Event deleted successfully' });
+        res.status(204).json({ message: 'Event deleted successfully' });
     });
 };
