@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const reservationController = require('../controllers/reservationController');
+const auth = require('../controllers/authController');
 
 router.get('/', reservationController.getReservations);
 router.post('/', reservationController.createReservation);
-/*router.put('/:id', reservationController.updateReservation);
-router.patch('/:id', reservationController.partialUpdateReservation);
-router.delete('/:id', reservationController.deleteReservation);*/
+router.put('/:id', auth.verifyToken,reservationController.updateReservation);
+router.patch('/:id', auth.verifyToken,reservationController.partialUpdateReservation);
+router.delete('/:id', auth.verifyToken,reservationController.deleteReservation);
 
 module.exports = router;

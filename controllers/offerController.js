@@ -18,3 +18,49 @@ exports.createOffer = (req, res) => {
         }
     );
 };
+
+exports.updateOffer = (req, res) => {
+    const { id } = req.params;
+    const { zona, disponibilidade, nrCamas, classificacao, tipo, comodidades } = req.body;
+    db.query(
+        'UPDATE offer SET zona = ?, disponibilidade = ?, nrCamas = ?, classificacao = ?, tipo = ?, comodidades = ? WHERE id = ?',
+        [zona, disponibilidade, nrCamas, classificacao, tipo, comodidades, id],
+        (err, results) => {
+            if (err) return res.status(500).json({ error: err.message });
+            if (results.affectedRows === 0) {
+                return res.status(404).json({ error: 'Offer not found' });
+            }
+            res.json({ message: 'Offer updated successfully' });
+        }
+    );
+};
+
+exports.partialUpdateOffer = (req, res) => {
+    const { id } = req.params;
+    const updates = req.body;
+    const fields = Object.keys(updates).map(key => `${key} = ?`).join(', ');
+    const values = Object.values(updates).concat(id);
+
+    db.query(
+        `UPDATE offer SET ${fields} WHERE id = ?`,
+        values,
+        (err, results) => {
+            if (err) return res.status(500).json({ error: err.message });
+            if (results.affectedRows === 0) {
+                return res.status(404).json({ error: 'Offer not found' });
+            }
+            res.json({ message: 'Offer updated successfully' });
+        }
+    );
+};
+
+exports.deleteOffer = (req, res) => {
+    const { id } = req.params;
+    db.query('DELETE FROM offer WHERE id = ?', [id], (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
+        if (results.affectedRows === 0) {
+            return res.status(404).json({ error: 'Offer not found' });
+        }
+        res.json({ message: 'Offer deleted successfully' });
+    });
+};
