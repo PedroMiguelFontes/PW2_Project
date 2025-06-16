@@ -9,6 +9,8 @@ exports.getReservations = (req, res) => {
 
 exports.createReservation = (req, res) => {
     const { data, oferta, estado } = req.body;
+    const loggedUserRole = req.loggedUserRole;
+
     if (!data || !oferta || !estado) {
         return res.status(400).json({ error: 'Please put all the information required' });
     }
@@ -74,6 +76,8 @@ exports.partialUpdateReservation = (req, res) => {
 
 exports.deleteReservation = (req, res) => {
     const { id } = req.params;
+    const loggedUserRole = req.loggedUserRole;
+    
     if (loggedUserRole !== 'admin') {
         return res.status(401).json({ error: 'Only admins can delete reservations' });
     }
