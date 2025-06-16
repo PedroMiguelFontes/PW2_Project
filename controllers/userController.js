@@ -1,22 +1,50 @@
 const bcrypt = require('bcryptjs');
 const db = require('../db/database');
 
+const jwt = require('jsonwebtoken');
+const config = require('../config'); 
+
 exports.login = async (req, res) => {
     const { username, password } = req.body;
+
     if (!username || !password) {
-        return res.status(400).json({ error: 'Username/Password are required' });
+        return res.status(400).json({ error: 'Username and password are required' });
     }
-    let User = await db.user.findOne({ where: { username: req.body.username } });
-    if (!User) return res.status(404).json({ success: false, msg: "User not found." });
+
     
-    const check = bcrypt.compareSync( req.body.password, User.password );
-    if (!check) return res.status(401).json({ success:false, accessToken:null, msg:"Invalid credentials!" });
-    
-    const token = jwt.sign({ id: user.id, role: user.role },
-    config.SECRET, { expiresIn: '24h' });
-    return res.status(200).json({ success: true, accessToken: token , msg:"login successful"});
-    
-    
+    db.query('SELECT * FROM user WHERE username = ? AND password= ?', [username,password], (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
+
+        
+        if (results.length === 0) {
+            return res.status(401).json({ error: 'Invalid username or password' });
+        }
+
+        const user = results[0];
+
+        
+        bcrypt.compare(password, user.password, (err, isMatch) => {
+            if (err) return res.status(500).json({ error: err.message });
+
+            if (!isMatch) {
+                return res.status(401).json({ error: 'Invalid username or password' });
+            }
+
+            
+            const token = jwt.sign(
+                { id: user.id, username: user.username, role: user.role },
+                config.SECRET,
+                { expiresIn: '24h' }
+            );
+
+            return res.status(200).json({
+                success: true,
+                accessToken: token,
+                msg: 'Login successful',
+                user: { id: user.id, username: user.username, role: user.role }
+            });
+        });
+    });
 };
 
 exports.getUsers = (req, res) => {
