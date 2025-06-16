@@ -75,7 +75,7 @@ exports.partialUpdateReservation = (req, res) => {
 exports.deleteReservation = (req, res) => {
     const { id } = req.params;
     if (loggedUserRole !== 'admin') {
-        return res.status(403).json({ error: 'Only admins can delete reservations' });
+        return res.status(401).json({ error: 'Only admins can delete reservations' });
     }
     db.query('DELETE FROM reservation WHERE id = ?', [id], (err, results) => {
         if (err) return res.status(500).json({ error: err.message });

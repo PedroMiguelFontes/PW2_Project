@@ -1,4 +1,3 @@
-const { log } = require('console');
 const db = require('../db/database');
 
 exports.getEvents = (req, res) => {
@@ -15,14 +14,14 @@ exports.createEvent = (req, res) => {
         return res.status(400).json({ error: 'Please provide all required fields' });
     }
     if (loggedUserRole !== 'empregado') {
-        return res.status(403).json({ error: 'Only facilitators can create events' });
+        return res.status(401).json({ error: 'Only facilitators can create events' });
     }
     db.query(
         'INSERT INTO events (nome, tipo, duracao, data) VALUES (?, ?, ?, ?)',
         [nome, tipo, duracao, data],
         (err, results) => {
             if (err) return res.status(500).json({ error: err.message });
-            res.status(201).json({ id: results.insertId, nome });
+            res.status(201).json({ id: results.insertId, nome, tipo, duracao, data });
         }
     );
 };
@@ -35,7 +34,7 @@ exports.updateEvent = (req, res) => {
         return res.status(400).json({ error: 'Please provide all required fields' });
     }
     if (loggedUserRole !== 'admin') {
-        return res.status(403).json({ error: 'Only admins can update events' });
+        return res.status(401).json({ error: 'Only admins can update events' });
     }
     db.query(
         'UPDATE events SET nome = ?, tipo = ?, duracao = ?, data = ? WHERE id = ?',
@@ -58,7 +57,7 @@ exports.partialUpdateEvent = (req, res) => {
     const loggedUserRole = req.loggedUserRole;
 
     if (loggedUserRole !== 'admin') {
-        return res.status(403).json({ error: 'Only admins can update events' });
+        return res.status(401).json({ error: 'Only admins can update events' });
     }
     db.query(
         `UPDATE events SET ${fields} WHERE id = ?`,
@@ -77,7 +76,7 @@ exports.deleteEvent = (req, res) => {
     const { id } = req.params;
     const loggedUserRole = req.loggedUserRole; 
     if(loggedUserRole !== 'admin') {
-        return res.status(403).json({ error: 'Only admins can delete events' });
+        return res.status(401).json({ error: 'Only admins can delete events' });
     }
     db.query('DELETE FROM events WHERE id = ?', [id], (err, results) => {
         if (err) return res.status(500).json({ error: err.message });

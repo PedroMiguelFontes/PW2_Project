@@ -14,14 +14,14 @@ exports.createOffer = (req, res) => {
         return res.status(400).json({ error: 'Please provide all required fields' });
     }
     if (loggedUserRole !== 'empregado') {
-        return res.status(403).json({ error: 'Only facilitators can create offers' });
+        return res.status(401).json({ error: 'Only facilitators can create offers' });
     }
     db.query(
         'INSERT INTO offer (zona, disponibilidade, nrCamas, classificacao, tipo, comodidades) VALUES (?, ?, ?, ?, ?, ?)',
         [zona, disponibilidade, nrCamas, classificacao, tipo, comodidades],
         (err, results) => {
             if (err) return res.status(500).json({ error: err.message });
-            res.status(201).json({ id: results.insertId, zona });
+            res.status(201).json({ id: results.insertId, zona, disponibilidade, nrCamas, classificacao, tipo, comodidades });
         }
     );
 };
@@ -34,7 +34,7 @@ exports.updateOffer = (req, res) => {
     }
     const loggedUserRole = req.loggedUserRole;
     if (loggedUserRole !== 'admin') {
-        return res.status(403).json({ error: 'Only admins can update offers' });
+        return res.status(401).json({ error: 'Only admins can update offers' });
     }
 
     db.query(
@@ -58,7 +58,7 @@ exports.partialUpdateOffer = (req, res) => {
     const loggedUserRole = req.loggedUserRole;
 
     if (loggedUserRole !== 'admin') {
-        return res.status(403).json({ error: 'Only admins can update offers' });
+        return res.status(401).json({ error: 'Only admins can update offers' });
     }
 
     db.query(
@@ -78,7 +78,7 @@ exports.deleteOffer = (req, res) => {
     const { id } = req.params;
     const loggedUserRole = req.loggedUserRole;
     if (loggedUserRole !== 'admin') {
-        return res.status(403).json({ error: 'Only admins can delete offers' });
+        return res.status(401).json({ error: 'Only admins can delete offers' });
     }
     db.query('DELETE FROM offer WHERE id = ?', [id], (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
