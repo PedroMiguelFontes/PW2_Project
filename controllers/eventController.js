@@ -3,7 +3,7 @@ const db = require('../db/database');
 exports.getEvents = (req, res) => {
     db.query('SELECT * FROM events', (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
-        res.json(results);
+        res.status(200).json(results);
     });
 };
 

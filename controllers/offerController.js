@@ -3,7 +3,7 @@ const db = require('../db/database');
 exports.getOffers = (req, res) => {
     db.query('SELECT * FROM offer', (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
-        res.json(results);
+        res.status(200).json(results);
     });
 };
 
@@ -56,6 +56,9 @@ exports.partialUpdateOffer = (req, res) => {
 
 exports.deleteOffer = (req, res) => {
     const { id } = req.params;
+    if (loggedUserRole !== 'admin') {
+        return res.status(403).json({ error: 'Only admins can delete offers' });
+    }
     db.query('DELETE FROM offer WHERE id = ?', [id], (err, results) => {
         if (err) return res.status(500).json({ error: err.message });
         if (results.affectedRows === 0) {
