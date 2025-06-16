@@ -6,7 +6,7 @@ exports.verifyToken = (req, res, next) => {
     const bearer = header.split(' '); 
     const token = bearer[1];
     try {
-    let decoded = jwt.verify(token, config.SECRET);
+    let decoded = jwt.verify(token, process.env.SECRET);
     req.loggedUserId = decoded.id; 
     req.loggedUserRole = decoded.role;
     next();

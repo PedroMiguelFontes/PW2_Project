@@ -13,7 +13,7 @@ exports.createReservation = (req, res) => {
         return res.status(400).json({ error: 'Please put all the information required' });
     }
     if (loggedUserRole !== 'empregado') {
-        return res.status(403).json({ error: 'Only facilitators can delete offers' });
+        return res.status(401).json({ error: 'Only facilitators can create reservations' });
     }
     db.query(
         'INSERT INTO reservation (data, oferta, estado) VALUES (?, ?, ?)',
@@ -28,11 +28,12 @@ exports.createReservation = (req, res) => {
 exports.updateReservation = (req, res) => {
     const { id } = req.params;
     const { data, oferta, estado } = req.body;
+    const loggedUserRole = req.loggedUserRole;
     if (!data || !oferta || !estado) {
         return res.status(400).json({ error: 'Please put all the information required' });
     }
     if (loggedUserRole !== 'admin') {
-        return res.status(403).json({ error: 'Only admins can update reservations' });
+        return res.status(401).json({ error: 'Only admins can update reservations' });
     }
     db.query(
         'UPDATE reservation SET data = ?, oferta = ?, estado = ? WHERE id = ?',
@@ -52,8 +53,10 @@ exports.partialUpdateReservation = (req, res) => {
     const updates = req.body;
     const fields = Object.keys(updates).map(key => `${key} = ?`).join(', ');
     const values = Object.values(updates).concat(id);
+    const loggedUserRole = req.loggedUserRole;
+
     if (loggedUserRole !== 'admin') {
-        return res.status(403).json({ error: 'Only admins can update reservations' });
+        return res.status(401).json({ error: 'Only admins can update reservations' });
     }
 
     db.query(
