@@ -1,6 +1,5 @@
 const bcrypt = require('bcryptjs');
 const db = require('../db/database');
-
 const jwt = require('jsonwebtoken');
 const config = require('../config'); 
 
@@ -8,7 +7,7 @@ exports.login = async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
-        return res.status(400).json({ error: 'Username and password are required' });
+        return res.status(400).json({ error: 'Username and/or password are required' });
     }
 
     
@@ -17,35 +16,28 @@ exports.login = async (req, res) => {
 
         
         if (results.length === 0) {
-            return res.status(401).json({ error: 'Invalid username or password' });
+            return res.status(404).json({ error: 'User not found' });
         }
 
         const user = results[0];
 
-        
-        bcrypt.compare(password, user.password, (err, isMatch) => {
-            if (err) return res.status(500).json({ error: err.message });
-
-            if (!isMatch) {
-                return res.status(401).json({ error: 'Invalid username or password' });
-            }
+        if (user.password !== password) {
+            return res.status(401).json({success:false,accessToken:null,msg: 'Invalid credentials' });
+        }
 
             
-            const token = jwt.sign(
+        const token = jwt.sign(
                 { id: user.id, username: user.username, role: user.role },
                 config.SECRET,
                 { expiresIn: '24h' }
-            );
+        );
 
-            return res.status(200).json({
-                success: true,
-                accessToken: token,
-                msg: 'Login successful',
-                user: { id: user.id, username: user.username, role: user.role }
-            });
+        return res.status(200).json({
+            accessToken: token,      
         });
-    });
+        });
 };
+
 
 exports.getUsers = (req, res) => {
     db.query('SELECT username,role FROM user', (err, results) => {

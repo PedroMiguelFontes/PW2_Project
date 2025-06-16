@@ -4,6 +4,8 @@ const offerController = require('../controllers/offerController');
 
 router.get('/', offerController.getOffers);
 router.post('/', offerController.createOffer);
-
+/*router.put('/:id', offerController.updateOffer);
+router.patch('/:id', offerController.partialUpdateOffer);   
+router.delete('/:id', offerController.deleteOffer);*/
 
 module.exports = router;

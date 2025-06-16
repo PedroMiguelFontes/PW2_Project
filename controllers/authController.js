@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken');
 exports.verifyToken = (req, res, next) => {
     const header = req.headers['x-access-token'] || req.headers.authorization;
     if (typeof header == 'undefined')
